@@ -23,7 +23,7 @@ export default function Login(props) {
               <Text style={styles.loginText}>Login</Text>
               <LoginForm parentContext={props.parentContext} />
             </View>
-        </KeyboardAvoidingView >
+          </KeyboardAvoidingView >
         <Text style={styles.forgotPassText}>Forgot Password?</Text>
         </View>
         <View style={styles.bottomContainer}>

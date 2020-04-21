@@ -1,4 +1,5 @@
 import * as React from "react";
+import Expo from 'expo';
 import {
   StyleSheet,
   View,
@@ -11,11 +12,14 @@ import * as Font from "expo-font";
 import * as Permissions from "expo-permissions";
 import { Notifications } from "expo";
 import { Ionicons } from "@expo/vector-icons";
+import Constants from 'expo-constants';
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import Login from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
+import SendScreen from "./screens/SendScreen";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ENDPOINT } from './constants/Endpoint';
 // const ENDPOINT = 'http://127.0.0.1:8000/';
@@ -166,6 +170,10 @@ export default function App({ navigation }) {
     return <HomeScreen parentContext={authContext} />;
   }
 
+  function SendComponent() {
+    return <SendScreen parentContext={authContext} />
+  }
+
   function _handleNotification(notification) {
     //if you want to make the phone vibrate upon recieving notification
     // Vibration.vibrate();
@@ -202,7 +210,7 @@ export default function App({ navigation }) {
             // User is signed in
             <Stack.Screen 
               name="Home" 
-              component={HomeComponent}
+              component={SendComponent}
               options={{
                 headerStyle: { backgroundColor: '#7B1FA2' },
                 headerTitle: (
@@ -223,28 +231,36 @@ export default function App({ navigation }) {
   );
 }
 
+
 async function registerForPushNotificationsAsync() {
-  const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-  // only asks if permissions have not already been determined, because
-  // iOS won't necessarily prompt the user a second time.
-  // On Android, permissions are granted on app installation, so
-  // `askAsync` will never prompt the user
-  // Stop here if the user did not grant permissions
-  if (status !== "granted") {
-    alert("No notification permissions!");
-    return;
+  if (Constants.isDevice) {
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = await Notifications.getExpoPushTokenAsync();
+    console.log(token);
+    await AsyncStorage.setItem("notificationToken", token);
+
+  } else {
+    alert('Must use physical device for Push Notifications');
   }
 
-  // Get the token that identifies this device
-  let token = await Notifications.getExpoPushTokenAsync();
-  console.log("THE TOKEN: " + token)
-  await AsyncStorage.setItem("notificationToken", token);
-
-  //TESTING SILENT NOTIFICATIONS
-  const testInfo = {
-    token: await AsyncStorage.getItem("notificationToken")
-  };
-}
+  if (Platform.OS === 'android') {
+    Notifications.createChannelAndroidAsync('default', {
+      name: 'default',
+      sound: true,
+      priority: 'max',
+      vibrate: [0, 250, 250, 250],
+    });
+  }
+};
 
 const styles = StyleSheet.create({
   container: {

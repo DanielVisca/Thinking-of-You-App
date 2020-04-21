@@ -1,68 +1,101 @@
+import { GiftedChat } from "react-native-gifted-chat";
+
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, 
+    Platform, 
+    StyleSheet, 
+    Text, 
+    TouchableOpacity, 
+    View, 
+    AsyncStorage 
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { MonoText } from '../components/StyledText';
-import { PermissionsAndroid } from 'react-native';
-import {Contacts} from 'react-native-contacts';
+import * as Contacts from 'expo-contacts';
  
 
-export default class HomeScreen extends React.PureComponent {
+
+
+
+
+
+
+
+export default class SendScreen extends React.PureComponent {
 
   constructor(props) {
     super(props);
     this.state = {
-      contactList: []
+        contacts: [],
+        searchPlaceholder: "Search"
     }
   }
   
   /* 
   call this on load
   */
-  componentDidMount(){
+async componentDidMount() {
     this._getContacts()
+    
   }
 
   componentWillUnmount(){
 
   }
 
-  _getContacts(){
-    console.log("in _getContacts")
-    PermissionsAndroid.request(
-    PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-        {
-          'title': 'Contacts',
-          'message': 'This app would like to view your contacts.',
-          'buttonPositive': 'Please accept bare mortal'
-        }
-      ).then(() => {
-        Contacts.getAll((err, contacts) => {
-          if (err === 'denied'){
-            console.log("denied access to contacts")
-            // error
-          } else {
-            console.log(contacts);
-            // contacts returned in Array
+
+
+async _getContacts(){
+    let context = this;
+    try {
+        let contacts = await AsyncStorage.getItem('contacts');
+        if (contacts != null){
+            console.log("in if \n")
+            console.log(contacts)
             this.setState(state => ({
-              contactList: contacts
+                contacts: contacts
             }))
-            console.log(contacts); 
-          }
-        })
-      })
-      .catch((error) => {
-        console.error(error);
-      })
+        }
+        else {
+            // request access to contacts
+            const { status } = await Contacts.requestPermissionsAsync();
+            if (status === 'granted') {
+                const { data } = await Contacts.getContactsAsync({
+                    fields: [
+                        Contacts.Fields.PhoneNumbers
+                    ],
+                });
+                console.log("in else \n")
+                console.log(data)
+                if (data.length > 0) {
+                    AsyncStorage.setItem("contacts", data);
+                    this.setState(state => ({
+                        contacts: data
+                    }))
+                }
+            }
+        }
+    } catch (error) {
+        console.error(error)
+      // Error retrieving data
     }
+}
+
+
+//   async _getContacts () {
+//     contacts = await AsyncStorage.getItem("contacts");
+//     console.log("contacts")
+//     console.log(contacts)
+//   }
 
   render() {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <View style={styles.welcomeContainer}>
-            
+            <Text> IN SEND SCREEN</Text>
           </View>
         </ScrollView>
   
@@ -74,7 +107,7 @@ export default class HomeScreen extends React.PureComponent {
   
 }
 
-HomeScreen.navigationOptions = {
+SendScreen.navigationOptions = {
   header: null,
 };
 
@@ -142,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 50,
   },
-  homeScreenFilename: {
+  sendScreenFilename: {
     marginVertical: 7,
   },
   codeHighlightText: {
