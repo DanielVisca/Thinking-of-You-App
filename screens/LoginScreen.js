@@ -48,11 +48,11 @@ const styles = StyleSheet.create({
   },
   topContainer: {
     flex: 9,
-    backgroundColor: '#fff'
+    backgroundColor: '#ffffff'
   },
   bottomContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#ffffff'
   },
   logoContainer: {
     alignItems: 'flex-end',
@@ -63,14 +63,14 @@ const styles = StyleSheet.create({
     height: 60
     },
   loginText:{
-    color: '#f8962e',
+    color: '#7B1FA2',
     marginTop: '50%',
     paddingLeft: 10,
     fontWeight: '200',
     fontSize: 35
   },
   signUpButtonContainer: {
-    backgroundColor: "#f8962e",
+    backgroundColor: "#7B1FA2",
     position: 'absolute',
     alignSelf: 'center',
     justifyContent: 'center',
@@ -80,13 +80,13 @@ const styles = StyleSheet.create({
     bottom: 0
   },
   buttonText: {
-    color: "#fff",
+    color: "#ffffff",
     textAlign: "center",
     fontWeight: "300",
     fontSize: 20
   },
   forgotPassText: {
-    color: "#f8962e",
+    color: "#7B1FA2",
     marginTop: 10,
     alignSelf: 'center',
     fontWeight: '300',

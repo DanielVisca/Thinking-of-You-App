@@ -113,14 +113,11 @@ async function authUser(usr, pass, callback) {
         console.log("response: " + response)
         // extract token
         response.json().then(responseJson => {
-          console.log("responseJson")
-          console.log(responseJson)
           callback(responseJson);
         });
       }
     })
     .catch(error => {
-      console.log(("Yup it is this fetch error"))
       console.log("fetch error: " + error);
     });
 }
@@ -133,12 +130,12 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom: "5%",
     padding: 10,
-    borderBottomColor: "#f8962e",
+    borderBottomColor: "#7B1FA2",
     borderBottomWidth: 1, 
     fontSize: 20
   },
   loginButtonContainer: {
-    backgroundColor: "#149347",
+    backgroundColor: "#7B1FA2",
     paddingVertical: 10,
     width: 250,
     marginTop: "5%",
@@ -146,7 +143,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   buttonText: {
-    color: "#fff",
+    color: "#ffffff",
     textAlign: "center",
     fontWeight: "200",
     fontSize: 20

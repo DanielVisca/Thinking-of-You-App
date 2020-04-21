@@ -112,6 +112,9 @@ export default function App({ navigation }) {
       signOut: () => {
         // alert back-end we're logging out
         AsyncStorage.getItem('userToken').then((userToken) => {
+          console.log("--Logoff--")
+          console.log(userToken)
+          console.log(ENDPOINT)
           if(userToken){
             const endpoint = ENDPOINT + 'logoff'
             fetch(endpoint, {
@@ -201,7 +204,7 @@ export default function App({ navigation }) {
               name="Home" 
               component={HomeComponent}
               options={{
-                headerStyle: { backgroundColor: '#f8962e' },
+                headerStyle: { backgroundColor: '#7B1FA2' },
                 headerTitle: (
                   <Text style={{ color: '#fff', fontSize: 20 }}>Thinking of You</Text>
                 ),
@@ -234,6 +237,7 @@ async function registerForPushNotificationsAsync() {
 
   // Get the token that identifies this device
   let token = await Notifications.getExpoPushTokenAsync();
+  console.log("THE TOKEN: " + token)
   await AsyncStorage.setItem("notificationToken", token);
 
   //TESTING SILENT NOTIFICATIONS
