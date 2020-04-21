@@ -23,7 +23,7 @@ export default function ContactBubble({contact})  {
                     contact.image : 
                     require('./../assets/images/robot-dev.png')}
             />
-            <Text>{contact.name}</Text>
+            <Text style={styles.name}>{contact.name.substr(0,8)} </Text>
         </View>
       );
     }
@@ -33,13 +33,18 @@ export default function ContactBubble({contact})  {
       padding: 20
     },
 
-   bubble: {
+    name : {
+        flex: 1
+    },
+
+    bubble: {
         flex: 1,
         margin: 5,
-        minWidth: 100,
-        maxWidth: 100,
-        height: 100,
-        maxHeight: 104,
+        minWidth: 50,
+        maxWidth: 50,
+        height: 50,
+        maxHeight: 50,
+        borderRadius: 25,
         backgroundColor: '#7B1FA2',
     }
   });

@@ -76,6 +76,7 @@ render() {
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
+                numColumns={4}
                 onEndReachedThreshold={0}
                 onEndReached={({ distanceFromEnd }) => {
                 console.debug('on end reached ', distanceFromEnd);
@@ -84,8 +85,6 @@ render() {
                 data={this.state.contacts}
                 renderItem={({ item }) => (
                     <ContactBubble
-                        img={ item.imageAvailable ? item.image : null}
-                        name={item.firstName}
                         contact={item}
                         // selected={!!selected.get(item.id)}
                         // onSelect={onSelect}
