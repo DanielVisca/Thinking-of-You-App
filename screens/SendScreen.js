@@ -8,10 +8,12 @@ import { Image,
     Text, 
     TouchableOpacity, 
     View, 
+    FlatList,
+    SafeAreaView,
     AsyncStorage 
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import ContactBubble from './../components/ContactBubble'
 import { MonoText } from '../components/StyledText';
 import * as Contacts from 'expo-contacts';
  
@@ -29,7 +31,6 @@ export default class SendScreen extends React.PureComponent {
     super(props);
     this.state = {
         contacts: [],
-        searchPlaceholder: "Search"
     }
   }
   
@@ -42,66 +43,61 @@ async componentDidMount() {
   }
 
   componentWillUnmount(){
-
   }
 
-
-
 async _getContacts(){
-    let context = this;
-    try {
-        let contacts = await AsyncStorage.getItem('contacts');
-        if (contacts != null){
-            console.log("in if \n")
-            console.log(contacts)
+    const { status } = await Contacts.requestPermissionsAsync();
+    if (status === 'granted') {
+        const { data } = await Contacts.getContactsAsync({
+            fields: [
+                Contacts.Fields.PhoneNumbers
+            ],
+        });
+        if (data.length > 0) {
             this.setState(state => ({
-                contacts: contacts
+                contacts: data
             }))
         }
-        else {
-            // request access to contacts
-            const { status } = await Contacts.requestPermissionsAsync();
-            if (status === 'granted') {
-                const { data } = await Contacts.getContactsAsync({
-                    fields: [
-                        Contacts.Fields.PhoneNumbers
-                    ],
-                });
-                console.log("in else \n")
-                console.log(data)
-                if (data.length > 0) {
-                    AsyncStorage.setItem("contacts", data);
-                    this.setState(state => ({
-                        contacts: data
-                    }))
-                }
-            }
-        }
-    } catch (error) {
-        console.error(error)
-      // Error retrieving data
     }
 }
 
-
-//   async _getContacts () {
-//     contacts = await AsyncStorage.getItem("contacts");
-//     console.log("contacts")
-//     console.log(contacts)
-//   }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Text> IN SEND SCREEN</Text>
-          </View>
-        </ScrollView>
+render() {
+    // const [selected, setSelected] = React.useState(new Map());
   
-        <View style={styles.tabBarInfoContainer}>
-        </View>
-      </View>
+    // const onSelect = React.useCallback(
+    //   id => {
+    //     const newSelected = new Map(selected);
+    //     newSelected.set(id, !selected.get(id));
+  
+    //     setSelected(newSelected);
+    //   },
+    //   [selected],
+    // );
+    return (
+        <SafeAreaView style={styles.container}>
+            <FlatList
+                onEndReachedThreshold={0}
+                onEndReached={({ distanceFromEnd }) => {
+                console.debug('on end reached ', distanceFromEnd);
+                }}
+                contentContainerStyle={styles.list}
+                data={this.state.contacts}
+                renderItem={({ item }) => (
+                    <ContactBubble
+                        img={ item.imageAvailable ? item.image : null}
+                        name={item.firstName}
+                        contact={item}
+                        // selected={!!selected.get(item.id)}
+                        // onSelect={onSelect}
+                    />
+                )}
+                keyExtractor={item => item.id}
+                // extraData={selected}
+            />
+        
+            <View style={styles.tabBarInfoContainer}>
+            </View>
+      </SafeAreaView>
     );
   }
   
@@ -110,39 +106,6 @@ async _getContacts(){
 SendScreen.navigationOptions = {
   header: null,
 };
-
-function DevelopmentModeNotice() {
-  if (__DEV__) {
-    const learnMoreButton = (
-      <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
-        Learn more
-      </Text>
-    );
-
-    return (
-      <Text style={styles.developmentModeText}>
-        Development mode is enabled: your app will be slower but you can use useful development
-        tools. {learnMoreButton}
-      </Text>
-    );
-  } else {
-    return (
-      <Text style={styles.developmentModeText}>
-        You are not in development mode: your app will run at full speed.
-      </Text>
-    );
-  }
-}
-
-function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/workflow/development-mode/');
-}
-
-function handleHelpPress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/get-started/create-a-new-app/#making-your-first-change'
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
