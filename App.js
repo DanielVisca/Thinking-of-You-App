@@ -41,6 +41,8 @@ export default function App({ navigation }) {
             isLoading: false
           };
         case "SIGN_IN":
+          console.log("In SIGN_IN")
+          console.log("previous state")
           return {
             ...prevState,
             isSignout: false,
@@ -68,6 +70,7 @@ export default function App({ navigation }) {
       let userToken;
 
       try {
+        console.log("goting to set token")
         // Load fonts
         await Font.loadAsync({
           ...Ionicons.font,
@@ -75,9 +78,11 @@ export default function App({ navigation }) {
         });
 
         userToken = await AsyncStorage.getItem("userToken");
-
+        console.log("checking if user token is null ")
+        console.log(userToken)
         notificationToken = await AsyncStorage.getItem("notificationToken");
         if (notificationToken == null) {
+          console.log("userToken was null")
           registerForPushNotificationsAsync();
           setNotificationCallback(
             Notifications.addListener(_handleNotification)
@@ -104,14 +109,6 @@ export default function App({ navigation }) {
   const authContext = React.useMemo(
     () => ({
       signIn: async data => {
-        // In a production app, we need to send some data (usually username, password) to server and get a token
-        // We will also need to handle errors if sign in failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        //TODO: add User's name to be stored
-        console.log("data")
-        console.log(data)
         AsyncStorage.setItem("userToken", data.user_auth_token);
         dispatch({ type: "SIGN_IN", token: data.user_auth_token });
       },
@@ -120,7 +117,6 @@ export default function App({ navigation }) {
         AsyncStorage.getItem('userToken').then((userToken) => {
           console.log("--Logoff--")
           console.log(userToken)
-          console.log(ENDPOINT)
           if(userToken){
             const endpoint = ENDPOINT + 'logoff'
             fetch(endpoint, {
@@ -151,6 +147,7 @@ export default function App({ navigation }) {
         // In the example, we'll use a dummy token
         console.log("Signup")
         console.log(data.user_auth_token)
+        AsyncStorage.setItem("userToken", data.user_auth_token)
         dispatch({ type: "SIGN_IN", token: data.user_auth_token });
       }
     }),
@@ -169,9 +166,6 @@ export default function App({ navigation }) {
     return <Login {...props} nav={navigation} parentContext={authContext} />;
   }
   function SignupComponent(props) {
-    console.log("In signup component")
-    console.log("props")
-    console.log(props)
     return <SignupScreen {...props} nav={navigation} parentContext={authContext} />;
   }
 
@@ -251,8 +245,12 @@ export default function App({ navigation }) {
 
 async function registerForPushNotificationsAsync() {
   if (Constants.isDevice) {
+
     const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    // const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
     let finalStatus = existingStatus;
+    console.log("authorized for push notifications?")
+    console.log(existingStatus)
     if (existingStatus !== 'granted') {
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
       finalStatus = status;

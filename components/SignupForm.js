@@ -21,7 +21,7 @@ export default class SignupForm extends Component {
           autoCapitalize="none"
           onSubmitEditing={() => this.password1Input.focus()}
           autoCorrect={false}
-          keyboardType="email-address"
+          keyboardType="number-pad"
           returnKeyType="next"
           placeholder="Phone Number"
           autoCorrect={false}
@@ -45,7 +45,7 @@ export default class SignupForm extends Component {
           autoCapitalize="none"
           returnKeyType="go"
           ref={input => (this.password2Input = input)}
-          placeholder="Password"
+          placeholder="Retype Password"
           placeholderTextColor="#a6a6a6"
           secureTextEntry
           onChangeText={text => this.setState({ pass2: text })}
@@ -74,6 +74,8 @@ export default class SignupForm extends Component {
               return;
             }
             if ( this.state.pass1 !== this.state.pass2) {
+                this.password1Input = ""
+                this.password2Input = ""
                 Alert.alert(
                 "Invalid Login Information",
                 "Your Passwords did not match",
@@ -137,11 +139,24 @@ async function authUser(usr, pass, callback) {
         )
         return;
       } else {
-        console.log("response: " + response)
-        // extract token
         response.json().then(responseJson => {
-          callback(responseJson);
+            console
+            if (responseJson.success){
+                // extract toke
+                callback(responseJson);
+            }
+            else {
+                Alert.alert(
+                    "Signup Failed",
+                    responseJson.msg,
+                    [{text: 'OK', onPress: () => {}}],
+                    { cancelable: true }
+                )
+                return;
+            }
+            
         });
+        
       }
     })
     .catch(error => {

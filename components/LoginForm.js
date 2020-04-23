@@ -20,7 +20,7 @@ export default class LoginForm extends Component {
           autoCapitalize="none"
           onSubmitEditing={() => this.passwordInput.focus()}
           autoCorrect={false}
-          keyboardType="email-address"
+          keyboardType="number-pad"
           returnKeyType="next"
           placeholder="Phone Number"
           autoCorrect={false}
