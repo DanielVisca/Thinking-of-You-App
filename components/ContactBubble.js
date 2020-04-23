@@ -12,13 +12,8 @@ import {ENDPOINT} from './../constants/Endpoint';
  
 
 
-export default function ContactBubble({contact})  {
-    console.log("contact")
-    console.log(contact)
-    console.log("\n")
-    
+export default function ContactBubble({contact})  { 
     return (
-    
       <TouchableOpacity onPress={() => {sendTOY(contact)}}>
         <View style={styles.container}>
             <Image style={styles.bubble}
@@ -41,7 +36,7 @@ async function sendTOY(contact) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        user_auth: await AsyncStorage.getItem("user_auth_token"),
+        user_auth: await AsyncStorage.getItem("userToken"),
         phone_number: contact.phoneNumbers[0].number
       })
     })
