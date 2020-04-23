@@ -235,7 +235,7 @@ export default function App({ navigation }) {
               />
           )}
           <Stack.Screen
-              name="Signup"
+              name="SignUp"
               component={SignupComponent}
               options={{
                 headerShown: false,

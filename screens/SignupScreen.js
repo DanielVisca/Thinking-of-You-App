@@ -28,13 +28,7 @@ export default function Signup(props) {
         <View style={styles.bottomContainer}>
           <TouchableOpacity 
             style={styles.signUpButtonContainer} 
-            onPress={() => {
-              console.log("this.props")
-              console.log(props)
-              props.parentContext.signUp()
-              //props.nav.navigate("signIn");
-              }}
-          >
+            onPress={() => { props.navigation.navigate("SignIn"); }}>
                 <Text style={styles.buttonText}>Back to LOGIN</Text>
           </TouchableOpacity>
         </View>
