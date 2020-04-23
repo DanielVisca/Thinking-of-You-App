@@ -8,6 +8,7 @@ import {
   AsyncStorage,
   Alert
 } from "react-native";
+import * as SMS from 'expo-sms';
 import {ENDPOINT} from './../constants/Endpoint';
  
 
@@ -28,6 +29,7 @@ export default function ContactBubble({contact})  {
     }
 
 async function sendTOY(contact) {
+    const phoneNumber = cleanPhoneNumber(contact.phoneNumbers[0].number)
     const endpoint = ENDPOINT + "send_toy";
     fetch(endpoint, {
       method: "post",
@@ -37,35 +39,75 @@ async function sendTOY(contact) {
       },
       body: JSON.stringify({
         user_auth: await AsyncStorage.getItem("userToken"),
-        phone_number: contact.phoneNumbers[0].number
+        phone_number: phoneNumber
       })
     })
       .then(response => {
-  
         if (response.status !== 200) {
           Alert.alert(
-            "Failed to send",
-            "It's us, not you. Blush",
-            [{text: 'OK', onPress: () => {}}],
+            contact.name + " does not have 'Thinking of you'",
+            "Would you like to let them know via text instead?",
+            [{text: 'OK', onPress: () => {withSMS(phoneNumber)}}],
             { cancelable: true }
           )
           return;
-        } else {
+        }
+        else {
           console.log("response: " + response)
           // extract token
           response.json().then(responseJson => {
             if (responseJson.success == false) {
-              console.log("the server didnt process the sent TOY properly. Return status 200 but failed to succeed")
+              Alert.alert(
+                "Failed to send",
+                "It's us, not you. Blush",
+                [{text: 'OK', onPress: () => {}}],
+                { cancelable: true }
+              )
             }
           });
         }
       })
       .catch(error => {
         console.log("fetch error: " + error);
+        Alert.alert(
+          "Failed to send",
+          "It's us, not you. Blush",
+          [{text: 'OK', onPress: () => {}}],
+          { cancelable: true }
+        )
       });
   }
 
+async function withSMS(contact){
+  const isAvailable = await SMS.isAvailableAsync();
+  if (isAvailable) {
+    // do your SMS stuff here
+    SMS.sendSMSAsync(contact, "I was just thinking of you")
+  } else {
+    // misfortune... there's no SMS available on this device
+    Alert.alert(
+      "Message failed",
+      "It seems your phone does not support SMS",
+      [{text: 'OK', onPress: () => {}}],
+      { cancelable: true }
+    )
+  }
+}
 
+function cleanPhoneNumber(phoneNumber){
+// remove all non-digit chars
+  let standardNo = phoneNumber.replace(/[^\d]/g,'').substr(1,)
+
+  if(standardNo.length!= 10) {
+      console.log("standardNo")
+      console.log(standardNo)
+      alert('non-standard number')
+      return;
+  }
+  console.log("standardNo")
+  console.log(standardNo)
+  return standardNo
+}
 const styles = StyleSheet.create({
     container: {
       padding: 20

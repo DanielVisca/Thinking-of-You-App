@@ -48,6 +48,13 @@ export default function App({ navigation }) {
             isSignout: false,
             userToken: action.token,
           };
+        case "SIGN_UP":
+        console.log("In SIGN_UP")
+        return {
+          ...prevState,
+          isSignout: false,
+          userToken: action.token,
+        };
         case "SIGN_OUT":
           return {
             ...prevState,
@@ -141,14 +148,10 @@ export default function App({ navigation }) {
         dispatch({ type: "SIGN_OUT" });
       },
       signUp: async data => {
-        // In a production app, we need to send user data to server and get a token
-        // We will also need to handle errors if sign up failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
         console.log("Signup")
         console.log(data.user_auth_token)
         AsyncStorage.setItem("userToken", data.user_auth_token)
-        dispatch({ type: "SIGN_IN", token: data.user_auth_token });
+        dispatch({ type: "SIGN_UP", token: data.user_auth_token });
       }
     }),
     []
