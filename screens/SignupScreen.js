@@ -8,11 +8,11 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-import LoginForm from '../components/LoginForm'
+import SignupForm from '../components/SignupForm'
 
 // Used this guide to help create login components: https://stacktips.com/tutorials/react/creating-login-screen-in-react-native
 
-export default function Login(props) {
+export default function Signup(props) {
     return (
       <View style={styles.container}>
         <View style={styles.topContainer}>
@@ -20,24 +20,22 @@ export default function Login(props) {
           <View style = {styles.backgroundContainer}>
             </View>
             <View >
-              <Text style={styles.loginText}>Login</Text>
-              <LoginForm parentContext={props.parentContext} />
+              <Text style={styles.loginText}>Sign up</Text>
+              <SignupForm parentContext={props.parentContext} />
             </View>
           </KeyboardAvoidingView>
-        <Text style={styles.forgotPassText}>Forgot Password?</Text>
         </View>
         <View style={styles.bottomContainer}>
           <TouchableOpacity 
             style={styles.signUpButtonContainer} 
             onPress={() => {
-              console.log("props")
+              console.log("this.props")
               console.log(props)
-              
-              props.navigation.navigate("Signup");
-              }
-              }
+              props.parentContext.signUp()
+              //props.nav.navigate("signIn");
+              }}
           >
-                <Text style={styles.buttonText}>SIGN UP</Text>
+                <Text style={styles.buttonText}>Back to LOGIN</Text>
           </TouchableOpacity>
         </View>
       </View>

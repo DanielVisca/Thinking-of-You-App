@@ -20,6 +20,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import SendScreen from "./screens/SendScreen";
+import SignupScreen from './screens/SignupScreen';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ENDPOINT } from './constants/Endpoint';
 // const ENDPOINT = 'http://127.0.0.1:8000/';
@@ -93,7 +94,7 @@ export default function App({ navigation }) {
 
       // This will switch to the App screen or Auth screen and this loading
       // screen will be unmounted and thrown away.
-      console.log("userToken: " +userToken)
+      console.log("userToken: " + userToken)
       dispatch({ type: "RESTORE_TOKEN", token: userToken });
     };
 
@@ -148,8 +149,9 @@ export default function App({ navigation }) {
         // We will also need to handle errors if sign up failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-
-        dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
+        console.log("Signup")
+        console.log(data.user_auth_token)
+        dispatch({ type: "SIGN_IN", token: data.user_auth_token });
       }
     }),
     []
@@ -163,8 +165,14 @@ export default function App({ navigation }) {
     );
   }
 
-  function LoginComponent() {
-    return <Login parentContext={authContext} />;
+  function LoginComponent(props) {
+    return <Login {...props} nav={navigation} parentContext={authContext} />;
+  }
+  function SignupComponent(props) {
+    console.log("In signup component")
+    console.log("props")
+    console.log(props)
+    return <SignupScreen {...props} nav={navigation} parentContext={authContext} />;
   }
 
   function HomeComponent() {
@@ -226,6 +234,14 @@ export default function App({ navigation }) {
               }} 
               />
           )}
+          <Stack.Screen
+              name="Signup"
+              component={SignupComponent}
+              options={{
+                headerShown: false,
+                animationTypeForReplace: state.isSignout ? "pop" : "push"
+              }}
+            />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthContext.Provider>
