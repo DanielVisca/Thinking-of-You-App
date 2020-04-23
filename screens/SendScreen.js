@@ -16,7 +16,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import ContactBubble from './../components/ContactBubble'
 import { MonoText } from '../components/StyledText';
 import * as Contacts from 'expo-contacts';
- 
+import { SectionGrid } from 'react-native-super-grid';
 
 
 
@@ -75,24 +75,27 @@ render() {
     // );
     return (
         <SafeAreaView style={styles.container}>
-            <FlatList
-                numColumns={4}
-                onEndReachedThreshold={0}
-                onEndReached={({ distanceFromEnd }) => {
-                console.debug('on end reached ', distanceFromEnd);
-                }}
-                contentContainerStyle={styles.list}
-                data={this.state.contacts}
-                renderItem={({ item }) => (
+        <SectionGrid
+            itemDimension={80}
+            sections={[
+              {
+                title: 'Favorites',
+                data: [],
+              },
+              {
+                title: 'All Contacts',
+                data: this.state.contacts,
+              },
+            ]}
+            renderItem={({ item }) => (
                     <ContactBubble
                         contact={item}
-                        // selected={!!selected.get(item.id)}
-                        // onSelect={onSelect}
                     />
                 )}
-                keyExtractor={item => item.id}
-                // extraData={selected}
-            />
+            renderSectionHeader={({ section }) => (
+              <Text style={{ fontSize: 20 }}>{section.title}</Text>
+            )}
+          />
         
             <View style={styles.tabBarInfoContainer}>
             </View>
