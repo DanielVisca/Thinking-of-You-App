@@ -18,13 +18,6 @@ import { MonoText } from '../components/StyledText';
 import * as Contacts from 'expo-contacts';
 import { SectionGrid } from 'react-native-super-grid';
 
-
-
-
-
-
-
-
 export default class SendScreen extends React.PureComponent {
 
   constructor(props) {
@@ -34,15 +27,9 @@ export default class SendScreen extends React.PureComponent {
     }
   }
   
-  /* 
-  call this on load
-  */
 async componentDidMount() {
     this._getContacts()
     
-  }
-
-  componentWillUnmount(){
   }
 
 async _getContacts(){
@@ -62,43 +49,32 @@ async _getContacts(){
 }
 
 render() {
-    // const [selected, setSelected] = React.useState(new Map());
-  
-    // const onSelect = React.useCallback(
-    //   id => {
-    //     const newSelected = new Map(selected);
-    //     newSelected.set(id, !selected.get(id));
-  
-    //     setSelected(newSelected);
-    //   },
-    //   [selected],
-    // );
     return (
         <SafeAreaView style={styles.container}>
-        <SectionGrid
-            itemDimension={80}
-            sections={[
-              {
-                title: 'Favorites',
-                data: [],
-              },
-              {
-                title: 'All Contacts',
-                data: this.state.contacts,
-              },
-            ]}
-            renderItem={({ item }) => (
-                    <ContactBubble
-                        contact={item}
-                    />
-                )}
-            renderSectionHeader={({ section }) => (
-              <Text style={{ fontSize: 20 }}>{section.title}</Text>
-            )}
-          />
+          <SectionGrid
+              itemDimension={80}
+              sections={[
+                {
+                  title: 'Favorites',
+                  data: [],
+                },
+                {
+                  title: 'All Contacts',
+                  data: this.state.contacts,
+                },
+              ]}
+              renderItem={({ item }) => (
+                      <ContactBubble
+                          contact={item}
+                      />
+                  )}
+              renderSectionHeader={({ section }) => (
+                <Text style={{ fontSize: 20 }}>{section.title}</Text>
+              )}
+            />
         
-            <View style={styles.tabBarInfoContainer}>
-            </View>
+          <View style={styles.tabBarInfoContainer}>
+          </View>
       </SafeAreaView>
     );
   }
