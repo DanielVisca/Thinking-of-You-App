@@ -94,7 +94,7 @@ async function authUser(usr, pass, callback) {
       if (response.status == 401) {
         Alert.alert(
           "Invalid Login Information",
-          "Incorrect phone_number Address or Password",
+          "Incorrect Phone Number or Password",
           [{text: 'OK', onPress: () => {}}],
           { cancelable: true }
         )

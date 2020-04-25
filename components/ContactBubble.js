@@ -14,20 +14,33 @@ import {ENDPOINT} from './../constants/Endpoint';
 
 
 export default function ContactBubble({contact})  { 
+    if (contact.imageAvailable) {
+      console.log("contact with image available")
+      console.log(contact)
+      console.log("image")
+      console.log(contact.image)
+    
+    }
     return (
       <TouchableOpacity onPress={() => {sendTOY(contact)}}>
         <View style={styles.container}>
             <Image style={styles.bubble}
-                source={contact.imageAvailable != false ? 
-                    contact.image : 
+                // Try .image  .rawImage   .thumbnail (deprecated, use Image)
+                source={contact.imageAvailable != false ?
+                    contact.image: 
                     require('./../assets/images/robot-dev.png')}
             />
-            <Text style={styles.name}>{contact.name.substr(0,8)} </Text>
+            <Text style={styles.name}>{contact.firstName} </Text>
+            <Text style={styles.name}>{contact.lastName} </Text>
         </View>
       </TouchableOpacity>
       );
     }
 
+/* 
+Send a 'Thinking of You' message. first try by sending a post request to server. If the contact does not have 
+an account, offer to send the message with SMS
+*/
 async function sendTOY(contact) {
     const phoneNumber = cleanPhoneNumber(contact.phoneNumbers[0].number)
     const endpoint = ENDPOINT + "send_toy";
@@ -78,24 +91,31 @@ async function sendTOY(contact) {
       });
   }
 
+/* 
+Open up native SMS app with prefilled message to the contacts phone number
+*/
 async function withSMS(contact){
   const isAvailable = await SMS.isAvailableAsync();
   if (isAvailable) {
-    // do your SMS stuff here
     SMS.sendSMSAsync(contact, "I was just thinking of you")
   } else {
-    // misfortune... there's no SMS available on this device
     Alert.alert(
       "Message failed",
-      "It seems your phone does not support SMS",
+      "It seems your phone does not support in app SMS",
       [{text: 'OK', onPress: () => {}}],
       { cancelable: true }
     )
   }
 }
 
+/* 
+Clean the phone number from the contacts list so that there are only digits, it is 10 digits long and the '1' 
+in the beginning is removed
+*/
 function cleanPhoneNumber(phoneNumber){
-// remove all non-digit chars
+
+  // to get primary .isPrimary returns a boolean   .digits returns a clean phone number
+  // remove all non-digit chars and the first digit This is assuming that the numner starts with a 1
   let standardNo = phoneNumber.replace(/[^\d]/g,'').substr(1,)
 
   if(standardNo.length!= 10) {
@@ -114,7 +134,8 @@ const styles = StyleSheet.create({
     },
 
     name : {
-        flex: 1
+        flex: 1,
+        alignSelf: 'center'
     },
 
     bubble: {
@@ -124,7 +145,8 @@ const styles = StyleSheet.create({
         maxWidth: 50,
         height: 50,
         maxHeight: 50,
-        borderRadius: 25,
+        borderRadius: 10,
+        // ^ change to 25 for circle
         backgroundColor: '#7B1FA2',
     }
   });

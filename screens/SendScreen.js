@@ -25,10 +25,11 @@ export default class SendScreen extends React.PureComponent {
     this.state = {
         contacts: [],
     }
+    this._getContacts()
   }
   
 async componentDidMount() {
-    this._getContacts()
+    //this._getContacts()
     
   }
 
@@ -37,9 +38,11 @@ async _getContacts(){
     if (status === 'granted') {
         const { data } = await Contacts.getContactsAsync({
             fields: [
-                Contacts.Fields.PhoneNumbers
+                Contacts.Fields.PhoneNumbers,
+                Contacts.Fields.Image
             ],
         });
+        
         if (data.length > 0) {
             this.setState(state => ({
                 contacts: data
