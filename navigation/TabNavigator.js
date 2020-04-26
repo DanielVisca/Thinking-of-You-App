@@ -18,8 +18,6 @@ export default function TabNavigator(props) {
   // https://reactnavigation.org/docs/en/screen-options-resolution.html
   
   //navigation.setOptions({ headerTitle: getHeaderTitle(route) });
-  console.log("props")
-  console.log(props)
   function SendComponent() {
     return <SendScreen parentContext={props.parentContext} />
   }

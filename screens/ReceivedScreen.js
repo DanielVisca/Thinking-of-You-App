@@ -1,243 +1,83 @@
-import { GiftedChat } from "react-native-gifted-chat";
+import React from 'react';
+import { Text, View, Button, Vibration, Platform } from 'react-native';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 
-import * as WebBrowser from 'expo-web-browser';
-import * as React from 'react';
-import { Image, 
-    Platform, 
-    StyleSheet, 
-    View, 
-    FlatList,
-    SafeAreaView,
-} from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import ContactBubble from './../components/ContactBubble'
-import { MonoText } from '../components/StyledText';
-import * as Contacts from 'expo-contacts';
+export default class AppContainer extends React.Component {
+  state = {
+    expoPushToken: '',
+    notification: {},
+  };
 
-export default class ReceivedScreen extends React.PureComponent {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-        contacts: [],
-    }
-  }
-  
-  /* 
-  call this on load
-  */
-async componentDidMount() {
-    //this._getContacts()
-    
-  }
-componentWillUnmount() {
-  }
-
-async _getContacts(){
-    const { status } = await Contacts.requestPermissionsAsync();
-    if (status === 'granted') {
-        const { data } = await Contacts.getContactsAsync({
-            fields: [
-                Contacts.Fields.PhoneNumbers
-            ],
-        });
-        if (data.length > 0) {
-            this.setState(state => ({
-                contacts: data
-            }))
-        }
-    }
-}
-
-_handleNotification = notification => {
-  // Vibration.vibrate();
-  // this.setState({ notification: notification });
-  console.log("Inside notification handler");
-  console.log(notification.data);
-  if (Platform.OS == "android") {
-    Notifications.dismissNotificationAsync(notification.notificationId);
-  }
-  // NONE of these things I've tried work:
-  // all give "unmounted" component warnings
-  // For now, this just grabs all markers from the
-  // server, so we'll still see new orders
-
-  // Check that this push notification is about a new order!
-  if (notification.data.type == 'order')
-  {
-    console.log("Inside new order!")
-    console.log(notification.data)
-    // get toys
-
-  }
-  if (notification.data.type == 'warning')
-  {
-
-    if (notification.data.warning_type == 0)
-    {
-      // 15-minute timer handler
-      console.log("Warning!")
-      Alert.alert(
-        'Warning!',
-        'You have 5 minutes to perform an action',
-        [
-          {text: 'OK', onPress: () => {}},
-        ],
-        { cancelable: false }
-      )      
+  registerForPushNotificationsAsync = async () => {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      // Possible error
+      let token = await Notifications.getExpoPushTokenAsync();
+      console.log("\nToken\n");
+      console.log(token);
+      this.setState({ expoPushToken: token });
+    } else {
+      alert('Must use physical device for Push Notifications');
     }
 
-    if (notification.data.warning_type == 1)
-    {
-      // 4-hour shift timer
-      console.log("Warning!")
-      Alert.alert(
-        'Warning!',
-        'Your shift is ending in 10 minutes!',
-        [
-          {text: 'OK', onPress: () => {}},
-        ],
-        { cancelable: false }
-      )      
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('default', {
+        name: 'default',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+      });
     }
+  };
 
-  }
-  if (notification.data.type == 'logoff')
-  {
-    console.log("Driver is being logged off!")
-    Alert.alert(
-      'Logging off!',
-      'You are being logged out!',
-      [
-        {text: 'OK', onPress: () => {}},
-      ],
-      { cancelable: false }
-    )
-    // TODO: How to log off a user from here?
-    // we want to call authContexts signout method?
-    this.props.parentContext.signOut()
-  }
-};
+  componentDidMount() {
+    this.registerForPushNotificationsAsync();
 
-render() {
+    // Handle notifications that are received or selected while the app
+    // is open. If the app was closed and then opened by tapping the
+    // notification (rather than just tapping the app icon to open it),
+    // this function will fire on the next tick after the app starts
+    // with the notification data.
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+  }
+
+  _handleNotification = notification => {
+    Vibration.vibrate();
+    console.log(notification);
+    this.setState({ notification: notification });
+  };
+
+  render() {
     return (
-        <SafeAreaView style={styles.container}>
-            <FlatList
-                numColumns={4}
-                onEndReachedThreshold={0}
-                onEndReached={({ distanceFromEnd }) => {
-                console.debug('on end reached ', distanceFromEnd);
-                }}
-                contentContainerStyle={styles.list}
-                data={this.state.contacts}
-                renderItem={({ item }) => (
-                    <ContactBubble
-                        contact={item}
-                        // selected={!!selected.get(item.id)}
-                        // onSelect={onSelect}
-                    />
-                )}
-                keyExtractor={item => item.id}
-                // extraData={selected}
-            />
-        
-            <View style={styles.tabBarInfoContainer}>
-            </View>
-      </SafeAreaView>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'space-around',
+        }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <Text>Origin: {this.state.notification.origin}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification)}</Text>
+        </View>
+      </View>
     );
   }
-  
 }
 
-ReceivedScreen.navigationOptions = {
-  header: null,
-};
+/*  TO GET PUSH RECEIPTS, RUN THE FOLLOWING COMMAND IN TERMINAL, WITH THE RECEIPTID SHOWN IN THE CONSOLE LOGS
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  sendScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
-});
+    curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
+      "ids": ["YOUR RECEIPTID STRING HERE"]
+      }'
+*/
