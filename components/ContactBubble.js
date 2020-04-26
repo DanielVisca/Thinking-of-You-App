@@ -14,13 +14,6 @@ import {ENDPOINT} from './../constants/Endpoint';
 
 
 export default function ContactBubble({contact})  { 
-    if (contact.imageAvailable) {
-      console.log("contact with image available")
-      console.log(contact)
-      console.log("image")
-      console.log(contact.image)
-    
-    }
     return (
       <TouchableOpacity onPress={() => {sendTOY(contact)}}>
         <View style={styles.container}>

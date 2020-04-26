@@ -1,4 +1,4 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createTabNavigator } from '@react-navigation/bottom-tabs';
 import * as React from 'react';
 
 import TabBarIcon from '../components/TabBarIcon';
@@ -6,11 +6,13 @@ import TabBarIcon from '../components/TabBarIcon';
 // import LinksScreen from '../screens/LinksScreen';
 import SendScreen from '../screens/SendScreen';
 import ReceivedScreen from '../screens/ReceivedScreen';
-const BottomTab = createBottomTabNavigator();
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+const Tab = createMaterialTopTabNavigator();
 const INITIAL_ROUTE_NAME = 'Send';
 
 
-export default function BottomTabNavigator(props) {
+export default function TabNavigator(props) {
   // Set the header title on the parent stack navigator depending on the
   // currently active tab. Learn more in the documentation:
   // https://reactnavigation.org/docs/en/screen-options-resolution.html
@@ -23,20 +25,22 @@ export default function BottomTabNavigator(props) {
   }
   
   function ReceivedComponent() {
-    return <ReceivedScreen parentContext={parentContext} />
+    return <ReceivedScreen parentContext={props.parentContext} />
   }
 
   return (
-    <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
-      <BottomTab.Screen
+    <Tab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
+      <Tab.Screen
         name="Send"
+        
         component={SendComponent}
         options={{
+          
           title: 'Send',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-send" />,
         }}
       />
-      <BottomTab.Screen
+      <Tab.Screen
         name="Received"
         component={ReceivedComponent}
         options={{
@@ -44,7 +48,7 @@ export default function BottomTabNavigator(props) {
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-mail" />,
         }}
       />
-    </BottomTab.Navigator>
+    </Tab.Navigator>
   );
 }
 

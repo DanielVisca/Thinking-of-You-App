@@ -15,6 +15,7 @@
     "@expo/vector-icons": "~10.0.6",
     "@react-native-community/masked-view": "0.1.6",
     "@react-navigation/bottom-tabs": "^5.0.0",
+    "@react-navigation/material-top-tabs": "^5.1.9",
     "@react-navigation/native": "^5.0.0",
     "@react-navigation/stack": "^5.0.0",
     "@react-navigation/web": "~1.0.0-alpha.9",
@@ -23,6 +24,7 @@
     "expo-constants": "~9.0.0",
     "expo-contacts": "~8.1.0",
     "expo-font": "~8.1.0",
+    "expo-sms": "~8.1.0",
     "expo-web-browser": "~8.1.0",
     "react": "~16.9.0",
     "react-devtools": "^4.6.0",
@@ -31,11 +33,12 @@
     "react-native-contacts": "^5.2.0",
     "react-native-gesture-handler": "~1.6.0",
     "react-native-gifted-chat": "^0.13.0",
+    "react-native-reanimated": "^1.8.0",
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "~2.2.0",
     "react-native-super-grid": "^3.2.0",
-    "react-native-web": "~0.11.7",
-    "expo-sms": "~8.1.0"
+    "react-native-tab-view": "^2.14.0",
+    "react-native-web": "~0.11.7"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

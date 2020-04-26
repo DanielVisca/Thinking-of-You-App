@@ -23,7 +23,7 @@ import ReceivedScreen from "./screens/ReceivedScreen";
 import SignupScreen from './screens/SignupScreen';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ENDPOINT } from './constants/Endpoint';
-import BottomTabNavigator from "./navigation/BottomTabNavigator";
+import TabNavigator from "./navigation/TabNavigator";
 // const ENDPOINT = 'http://127.0.0.1:8000/';
 const AuthContext = React.createContext();
 
@@ -178,7 +178,7 @@ export default function App({ navigation }) {
   }
 
   function inAppComponent() {
-    return <BottomTabNavigator parentContext={authContext} />
+    return <TabNavigator parentContext={authContext} />
   }
 
   function SendComponent() {
