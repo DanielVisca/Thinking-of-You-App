@@ -241,6 +241,8 @@ export default function App({ navigation }) {
               }} 
               />
           )}
+          { state.userToken == null ? (
+
           <Stack.Screen
               name="SignUp"
               component={SignupComponent}
@@ -249,6 +251,24 @@ export default function App({ navigation }) {
                 animationTypeForReplace: state.isSignout ? "pop" : "push"
               }}
             />
+          ) : (
+            <Stack.Screen 
+              name="Main" 
+              component={inAppComponent}
+              options={{
+                headerStyle: { backgroundColor: '#7B1FA2' },
+                headerTitle: (
+                  <Text style={{ color: '#fff', fontSize: 20 }}>Thinking of You</Text>
+                ),
+                headerTitleAlign: 'center',
+                headerRight: () => (
+                  <TouchableOpacity
+                    onPress={() => { authContext.signOut() }}
+                  ><Text style={{ color: '#fff', paddingRight: 15, fontSize: 20 }}>Logout</Text></TouchableOpacity>
+                ),
+              }} 
+              />
+          )}
         </Stack.Navigator>
         
       </NavigationContainer>
