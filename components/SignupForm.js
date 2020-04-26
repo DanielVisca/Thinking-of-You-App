@@ -18,6 +18,7 @@ export default class SignupForm extends Component {
       <View style={styles.container}>
         <TextInput
           style={styles.input}
+          maxLength={10}
           autoCapitalize="none"
           onSubmitEditing={() => this.password1Input.focus()}
           autoCorrect={false}

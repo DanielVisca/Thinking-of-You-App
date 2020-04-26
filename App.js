@@ -16,13 +16,14 @@ import Constants from 'expo-constants';
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-
 import Login from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import SendScreen from "./screens/SendScreen";
+import ReceivedScreen from "./screens/ReceivedScreen";
 import SignupScreen from './screens/SignupScreen';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ENDPOINT } from './constants/Endpoint';
+import BottomTabNavigator from "./navigation/BottomTabNavigator";
 // const ENDPOINT = 'http://127.0.0.1:8000/';
 const AuthContext = React.createContext();
 
@@ -176,9 +177,17 @@ export default function App({ navigation }) {
     return <HomeScreen parentContext={authContext} />;
   }
 
+  function inAppComponent() {
+    return <BottomTabNavigator parentContext={authContext} />
+  }
+
   function SendComponent() {
     return <SendScreen parentContext={authContext} />
   }
+  function ReceivedComponent() {
+    return <ReceivedScreen parentContext={authContext} />
+  }
+
 
   function _handleNotification(notification) {
     //if you want to make the phone vibrate upon recieving notification
@@ -199,6 +208,7 @@ export default function App({ navigation }) {
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
+        
         <Stack.Navigator>
           {state.userToken == null ? (
             // No token found, user isn't signed in
@@ -216,7 +226,7 @@ export default function App({ navigation }) {
             // User is signed in
             <Stack.Screen 
               name="Home" 
-              component={SendComponent}
+              component={inAppComponent}
               options={{
                 headerStyle: { backgroundColor: '#7B1FA2' },
                 headerTitle: (
@@ -240,6 +250,7 @@ export default function App({ navigation }) {
               }}
             />
         </Stack.Navigator>
+        
       </NavigationContainer>
     </AuthContext.Provider>
   );

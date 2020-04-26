@@ -9,12 +9,13 @@ import { Image,
     TouchableOpacity, 
     View, 
     FlatList,
+    TabBar,
     SafeAreaView,
     AsyncStorage 
 } from 'react-native';
+import { ReceivedScreen } from './ReceivedScreen';
 import { ScrollView } from 'react-native-gesture-handler';
 import ContactBubble from './../components/ContactBubble'
-import { MonoText } from '../components/StyledText';
 import * as Contacts from 'expo-contacts';
 import { SectionGrid } from 'react-native-super-grid';
 
@@ -26,6 +27,7 @@ export default class SendScreen extends React.PureComponent {
         contacts: [],
     }
     this._getContacts()
+    
   }
   
 async componentDidMount() {
@@ -75,10 +77,14 @@ render() {
                 <Text style={{ fontSize: 20 }}>{section.title}</Text>
               )}
             />
+            
         
           <View style={styles.tabBarInfoContainer}>
+             
           </View>
+           
       </SafeAreaView>
+      
     );
   }
   

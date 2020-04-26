@@ -98,6 +98,7 @@ async function withSMS(contact){
   const isAvailable = await SMS.isAvailableAsync();
   if (isAvailable) {
     SMS.sendSMSAsync(contact, "I was just thinking of you")
+    .catch(err => {console.error("error sending sms")});
   } else {
     Alert.alert(
       "Message failed",
