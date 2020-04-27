@@ -13,17 +13,14 @@ import {ENDPOINT} from './../constants/Endpoint';
  
 
 
-export default function ReceivedItem({contact})  { 
+export default function ReceivedItem({toy})  { 
+    console.log("ReceivedItem toy")
+    console.log(toy)
     return (
       <TouchableOpacity onPress={() => {}}>
         <View style={styles.container}>
-            <Image
-                // Try .image  .rawImage   .thumbnail (deprecated, use Image)
-                source={contact.imageAvailable != false ?
-                    contact.image: 
-                    require('./../assets/images/robot-dev.png')}
-            />
-            <Text style={styles.name}>{contact.name} </Text>
+            
+            <Text> Item added</Text>
         </View>
       </TouchableOpacity>
       );

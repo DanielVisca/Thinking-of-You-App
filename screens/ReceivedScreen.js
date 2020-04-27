@@ -1,14 +1,26 @@
 import React from 'react';
-import { Text, View, SectionList, Vibration, Platform, SafeAreaView } from 'react-native';
+import { Text, View, AsyncStorage, SectionList, Vibration, Platform, SafeAreaView } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import ReceivedItem from '../components/ReceivedItem';
+import {ENDPOINT} from './../constants/Endpoint';
+
 export default class AppContainer extends React.Component {
-  state = {
-    expoPushToken: '',
-    notification: {},
-  };
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      expoPushToken: '',
+      notification: {},
+      newToys: [],
+      toyHistory: []
+    };
+
+    this._isMounted = false;
+  // rest of your code  
+  } 
+
 
   registerForPushNotificationsAsync = async () => {
     if (Constants.isDevice) {
@@ -26,7 +38,10 @@ export default class AppContainer extends React.Component {
       let token = await Notifications.getExpoPushTokenAsync();
       console.log("\nToken\n");
       console.log(token);
-      this.setState({ expoPushToken: token });
+      this.setState(state => ({
+        expoPushToken: token,
+        newToys: [...state.newToys, token] // (possibly this.state.newToys) add token to new toys list (append to list)
+      }))
     } else {
       alert('Must use physical device for Push Notifications');
     }
@@ -50,13 +65,56 @@ export default class AppContainer extends React.Component {
     // this function will fire on the next tick after the app starts
     // with the notification data.
     this._notificationSubscription = Notifications.addListener(this._handleNotification);
+    //this._toysSeen(this.state.newToys)
   }
-
+  componentWillUnmount() {
+    this._isMounted = false;
+ }
   _handleNotification = notification => {
     Vibration.vibrate();
     console.log(notification);
     this.setState({ notification: notification });
   };
+
+  /* 
+  Takes a list of toy id's
+  Updates toys as seen as soon as rendered
+  */
+  _toysSeen = async (toys_seen) => {
+    if ( toys_seen == [] ) {
+      return;
+    }
+    const endpoint = ENDPOINT + "toys_seen";
+    fetch(endpoint, {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_auth: await AsyncStorage.getItem("userToken"),
+        toys: toys_seen
+      })
+    })
+      .then(response => {
+        if (response.status !== 200) {
+          console.log('TOY has not been updated as seen')
+          return;
+        }
+        else {
+          console.log("response: " + response)
+          // extract token
+          response.json().then(responseJson => {
+            if (responseJson.success) {
+              console.log("TOY seen success")
+            }
+          });
+        }
+      })
+      .catch(error => {
+        console.log("fetch error: " + error);
+      });
+  }
 
   render() {
     return (
@@ -65,30 +123,21 @@ export default class AppContainer extends React.Component {
               sections={[
                 {
                   title: 'New',
-                  data: [],
+                  data: this.state.newToys,
                 },
                 {
                   title: 'History',
                   data: [],
                 },
               ]}
-              renderItem={({ item }) => (
-                      <ReceivedItem
-                          contact={item}
-                      />
-                  )}
+              renderItem={({ item }) => ( <ReceivedItem contact={item}/> )}
               renderSectionHeader={({ section }) => (
                 <Text style={{ fontSize: 20 }}>{section.title}</Text>
               )}
+              keyExtractor={(item, index) => index}
             />
-            
-        
-          <View>
-             
-          </View>
-           
+  
       </SafeAreaView>
-     
     );
   }
 }

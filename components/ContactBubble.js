@@ -35,7 +35,7 @@ Send a 'Thinking of You' message. first try by sending a post request to server.
 an account, offer to send the message with SMS
 */
 async function sendTOY(contact) {
-    const phoneNumber = cleanPhoneNumber(contact.phoneNumbers[0].number)
+    const phoneNumber = getPhoneNumber(contact)//cleanPhoneNumber(contact.phoneNumbers[0].number)
     const endpoint = ENDPOINT + "send_toy";
     fetch(endpoint, {
       method: "post",
@@ -102,6 +102,26 @@ async function withSMS(contact){
   }
 }
 
+function getPhoneNumber(contact) {
+  let cleanPrimaryNum = '';
+ 
+  
+  for (const i in contact.phoneNumbers) {
+    let number = contact.phoneNumbers[i]; 
+
+    if (number.label == 'mobile'){
+      if (number.digits){
+        cleanPrimaryNum = number.digits
+      } else {
+        cleanPrimaryNum = cleanPhoneNumber(number.number)
+      }
+    } 
+  }
+  
+  console.log("cleanPrimaryNum")
+  console.log(cleanPrimaryNum)
+  return cleanPrimaryNum
+}
 /* 
 Clean the phone number from the contacts list so that there are only digits, it is 10 digits long and the '1' 
 in the beginning is removed
@@ -110,16 +130,8 @@ function cleanPhoneNumber(phoneNumber){
 
   // to get primary .isPrimary returns a boolean   .digits returns a clean phone number
   // remove all non-digit chars and the first digit This is assuming that the numner starts with a 1
-  let standardNo = phoneNumber.replace(/[^\d]/g,'').substr(1,)
-
-  if(standardNo.length!= 10) {
-      console.log("standardNo")
-      console.log(standardNo)
-      alert('non-standard number')
-      return;
-  }
-  console.log("standardNo")
-  console.log(standardNo)
+  
+  let standardNo = phoneNumber.replace(/[^\d]/g,'')
   return standardNo
 }
 const styles = StyleSheet.create({
