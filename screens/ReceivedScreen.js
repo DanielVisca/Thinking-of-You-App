@@ -1,9 +1,9 @@
 import React from 'react';
-import { Text, View, Button, Vibration, Platform } from 'react-native';
+import { Text, View, SectionList, Vibration, Platform, SafeAreaView } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
-
+import ReceivedItem from '../components/ReceivedItem';
 export default class AppContainer extends React.Component {
   state = {
     expoPushToken: '',
@@ -60,17 +60,35 @@ export default class AppContainer extends React.Component {
 
   render() {
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'space-around',
-        }}>
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Text>Origin: {this.state.notification.origin}</Text>
-          <Text>Data: {JSON.stringify(this.state.notification)}</Text>
-        </View>
-      </View>
+      <SafeAreaView>
+          <SectionList
+              sections={[
+                {
+                  title: 'New',
+                  data: [],
+                },
+                {
+                  title: 'History',
+                  data: [],
+                },
+              ]}
+              renderItem={({ item }) => (
+                      <ReceivedItem
+                          contact={item}
+                      />
+                  )}
+              renderSectionHeader={({ section }) => (
+                <Text style={{ fontSize: 20 }}>{section.title}</Text>
+              )}
+            />
+            
+        
+          <View>
+             
+          </View>
+           
+      </SafeAreaView>
+     
     );
   }
 }
@@ -80,4 +98,17 @@ export default class AppContainer extends React.Component {
     curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
       "ids": ["YOUR RECEIPTID STRING HERE"]
       }'
+
+
+        <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'space-around',
+        }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <Text>Origin: {this.state.notification.origin}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification)}</Text>
+        </View>
+      </View> 
 */
