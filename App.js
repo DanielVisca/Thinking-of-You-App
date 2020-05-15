@@ -23,13 +23,31 @@ import ReceivedScreen from "./screens/ReceivedScreen";
 import SignupScreen from './screens/SignupScreen';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ENDPOINT } from './constants/Endpoint';
+import { FirebaseConfig } from './constants/Secure';
 import TabNavigator from "./navigation/TabNavigator";
 // const ENDPOINT = 'http://127.0.0.1:8000/';
 const AuthContext = React.createContext();
 
 const Stack = createStackNavigator();
 
-export default function App({ navigation }) {
+import { withPhoneAuth } from 'react-native-doorman'
+
+import firebase from 'firebase/app'
+import 'firebase/auth'
+
+// 1. initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(FirebaseConfig)
+}
+
+// 3. give your app phone auth 🎉
+export default withPhoneAuth(App, {
+  doorman: {
+    publicProjectId: 'dzqsypMVuESYoBPknW7a'
+  }
+})
+					
+function App({ navigation }) {
   const [_notificationSubscription, setNotificationCallback] = React.useState();
   const [notification, setNotification] = React.useState({});
   const [state, dispatch] = React.useReducer(
